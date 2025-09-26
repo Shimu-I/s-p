@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio - Inspired by Mindhyve.ai</title>
+    <!-- Google Fonts: Poppins for a beautiful, modern sans-serif font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Preload Critical Resources for Faster Load -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js" as="script">
+    <!-- AOS for Advanced Scroll Animations -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <style>
+        /* Custom Tailwind Overrides */
+        @keyframes neon-pulse {
+            from {
+                text-shadow: 0 0 15px #3b82f6, 0 0 30px #3b82f6, 0 0 50px #3b82f6;
+            }
+
+            to {
+                text-shadow: 0 0 30px #3b82f6, 0 0 60px #3b82f6, 0 0 80px #3b82f6;
+            }
+        }
+
+        /* Glowing Text for Page Headers */
+        .glow-text {
+            font-weight: bold;
+            text-shadow: 0 0 15px #3b82f6, 0 0 30px #3b82f6, 0 0 50px #3b82f6;
+            animation: neon-pulse 1.5s infinite alternate;
+        }
+
+        /* Loading Animation Styles */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        #loader.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            border: 4px solid rgba(59, 130, 246, 0.1);
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #percent {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #3b82f6,;
+            letter-spacing: 1px;
+            text-align: center;
+            animation: bounce 0.6s ease infinite alternate;
+        }
+
+        @keyframes bounce {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(-8px);
+            }
+        }
+
+        /* Glowing Vertical Line */
+        .glowing-line {
+            width: 2px;
+            height: 60px;
+            background: #3b82f6;
+            box-shadow: 0 0 20px #3b82f6, 0 0 40px #3b82f6;
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Skills Table Styles */
+        .skills-table {
+            width: 100%;
+            max-width: 6xl;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .skills-table th,
+        .skills-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .skills-table th {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #3b82f6;
+            vertical-align: top;
+        }
+
+        .skills-table td {
+            font-size: 1rem;
+            color: #e5e7eb;
+        }
+
+        .tool-item {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0.5rem 1rem;
+        }
+
+        .tool-item img {
+            width: 3rem;
+            height: 3rem;
+            object-fit: contain;
+            border-radius: 50%;
+            padding: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .tool-item span {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #e5e7eb;
+            text-align: center;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-0.75rem);
+            }
+        }
+
+        /* Background color for logos based on darkness/lightness */
+        .dark-logo {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .light-logo {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Glitch 3D Headline */
+        .glitch {
+            font-size: 4rem;
+            font-weight: 900;
+            position: relative;
+            color: #fff;
+            letter-spacing: 2px;
+            transform: perspective(500px) rotateX(0deg) rotateY(0deg);
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            clip: rect(0, 900px, 0, 0);
+        }
+
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 #f0f, 2px 2px #0ff;
+            animation: glitchTop 2s infinite linear;
+        }
+
+        .glitch::after {
+            left: -2px;
+            text-shadow: 2px 0 #0ff, -2px -2px #f0f;
+            animation: glitchBottom 2s infinite linear;
+        }
+
+        @keyframes glitchTop {
+            0% {
+                clip: rect(0, 900px, 0, 0);
+                transform: translate(0, 0);
+            }
+
+            20% {
+                clip: rect(0, 900px, 50px, 0);
+                transform: translate(-3px, -3px);
+            }
+
+            40% {
+                clip: rect(10px, 900px, 40px, 0);
+                transform: translate(3px, 3px);
+            }
+
+            60% {
+                clip: rect(0, 900px, 0, 0);
+                transform: translate(0, 0);
+            }
+
+            100% {
+                clip: rect(0, 900px, 0, 0);
+                transform: translate(0, 0);
+            }
+        }
+
+        @keyframes glitchBottom {
+            0% {
+                clip: rect(0, 900px, 0, 0);
+                transform: translate(0, 0);
+            }
+
+            20% {
+                clip: rect(40px, 900px, 80px, 0);
+                transform: translate(3px, 3px);
+            }
+
+            40% {
+                clip: rect(30px, 900px, 60px, 0);
+                transform: translate(-3px, -3px);
+            }
+
+            60% {
+                clip: rect(0, 900px, 0, 0);
+                transform: translate(0, 0);
+            }
+
+            100% {
+                clip: rect(0, 900px, 0, 0);
+                transform: translate(0, 0);
+            }
+        }
+
+        /* 3D Shadow Effect for Subtext */
+        .subtext {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            color: #fff;
+            text-shadow:
+                1px 1px 0 #ff00c8,
+                2px 2px 0 #00fff7,
+                3px 3px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        /* Skills */
+        .skills {
+            margin: 25px 0;
+            font-size: 1rem;
+            color: #ccc;
+        }
+
+        .skills span {
+            margin: 0 8px;
+            position: relative;
+        }
+
+        .skills span::after {
+            content: "|";
+            position: absolute;
+            right: -10px;
+            color: #555;
+        }
+
+        .skills span:last-child::after {
+            content: "";
+        }
+
+        /* CTA Button */
+        .cta {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 30px;
+            background: linear-gradient(90deg, #3b82f6, #4ade80 );
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+
+<body class="font-poppins bg-black text-white overflow-x-hidden">
+    <!-- Loading Animation -->
+    <div id="loader">
+        <div class="spinner"></div>
+        <div id="percent">0%</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav
+        class="fixed top-0 w-full bg-white/5 backdrop-blur-xl border-b border-white/10 z-50 py-4 transition-bg duration-300">
+        <ul class="flex justify-center gap-8">
+            <li><a href="#home"
+                    class="text-white font-bold uppercase tracking-wide hover:text-blue-500 hover:-translate-y-0.5 transition-all duration-300">Home</a>
+            </li>
+            <li><a href="#projects"
+                    class="text-white font-bold uppercase tracking-wide hover:text-blue-500 hover:-translate-y-0.5 transition-all duration-300">Projects</a>
+            </li>
+            <li><a href="#education"
+                    class="text-white font-bold uppercase tracking-wide hover:text-blue-500 hover:-translate-y-0.5 transition-all duration-300">Education</a>
+            </li>
+            <li><a href="#expertise"
+                    class="text-white font-bold uppercase tracking-wide hover:text-blue-500 hover:-translate-y-0.5 transition-all duration-300">Expertise</a>
+            </li>
+            <li><a href="#contact"
+                    class="text-white font-bold uppercase tracking-wide hover:text-blue-500 hover:-translate-y-0.5 transition-all duration-300">Contact</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section with Glitch 3D Effect -->
+    <section id="home" class="min-h-screen flex items-center justify-center p-8 text-center relative bg-black">
+        <div id="hero-bg" class="fixed top-0 left-0 w-full h-screen z-0 transition-transform duration-100"></div>
+        <div class="hero-content z-10 max-w-3xl" data-aos="fade-up" data-aos-duration="600">
+            <h1 class="glitch" data-text="Jasmin Sultana Shimu">Jasmin Sultana Shimu</h1>
+            <div class="subtext">Where Innovation Meets Computer Science – Building the Future, One Project at a Time
+            </div>
+            <div class="skills">
+                <span>React</span>
+                <span>Node.js</span>
+                <span>Python</span>
+                <span>Three.js</span>
+                <span>Figma</span>
+            </div>
+            <a href="#projects" class="cta">View My Work</a>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="min-h-screen p-8 relative bg-gradient-to-b from-black to-gray-900 z-10 flex flex-col">
+        <div class="header flex items-center p-4">
+            <h2 class="text-5xl font-bold text-blue-500 glow-text pr-4">Projects</h2>
+            <div class="glowing-line"></div>
+        </div>
+        <div class="flex items-center justify-center flex-1" data-aos="fade-up">
+            <div class="content-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 max-w-6xl w-full">
+                <div class="card relative bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 group"
+                    data-aos="fade-up" data-aos-delay="100">
+                    <img src="images/scribble.png" alt="Project 1 Preview"
+                        class="w-full h-auto rounded-xl mb-4 shadow-md shadow-blue-500/20">
+                    <h3 class="text-2xl mb-2">Scribble</h3>
+                    <p class="mb-2 text-sm">
+                        Scribble is a dynamic platform for passionate writers and readers to share and explore stories
+                        across various genres. It fosters a vibrant community for creative expression and collaboration.
+                    </p>
+                    <p class="mb-4">Git Repo: <a href="https://github.com/Shimu-I/scribble_1.0.git"
+                            class="text-blue-500">View Repo</a>.</p>
+                    <div class="tech-stack flex flex-wrap gap-2">
+                        <span class="bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">JavaFX</span>
+                        <span class="bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">Java</span>
+                        <span class="bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">CSS</span>
+                        <span class="bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">MySQL</span>
+                    </div>
+                    <div class="video-preview fixed inset-0 bg-black/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50"
+                        style="box-shadow: 0 0 40px #3b82f6;">
+                        <iframe class="w-full h-full"
+                            src="https://www.youtube.com/embed//PdtZroIYYjE?si=v2TKVXx9AsqnNBiv" frameborder="0"
+                            allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="card relative bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 group"
+                    data-aos="fade-up" data-aos-delay="200">
+                    <img src="https://via.placeholder.com/400x200?text=Project+2+Preview" alt="Project 2 Preview"
+                        class="w-full h-auto rounded-xl mb-4 shadow-md shadow-blue-500/20">
+                    <h3 class="text-2xl mb-2">Project 2</h3>
+                    <p class="mb-2 text-sm">A brief description of the project highlighting key features and impacts.
+                    </p>
+                    <p class="mb-4">Git Repo: <a href="https://github.com/yourusername/project2"
+                            class="text-blue-500">View Repo</a>.</p>
+                    <div class="tech-stack flex flex-wrap gap-2">
+                        <span class="bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">Python</span>
+                        <span class="bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">Django</span>
+                        <span class="bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">PostgreSQL</span>
+                    </div>
+                    <div class="video-preview fixed inset-0 bg-black/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50"
+                        style="box-shadow: 0 0 40px #3b82f6;">
+                        <iframe class="w-full h-full"
+                            src="https://www.youtube.com/embed/YOUR_VIDEO_ID2?autoplay=1&mute=1&loop=1&playlist=YOUR_VIDEO_ID2"
+                            frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="card relative bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 group"
+                    data-aos="fade-up" data-aos-delay="300">
+                    <img src="https://via.placeholder.com/400x200?text=Project+3+Preview" alt="Project 3 Preview"
+                        class="w-full h-auto rounded-xl mb-4 shadow-md shadow-blue-500/20">
+                    <h3 class="text-2xl mb-2">Project 3</h3>
+                    <p class="mb-2 text-sm">A brief description of the project highlighting key features and impacts.
+                    </p>
+                    <p class="mb-4">Git Repo: <a href="https://github.com/yourusername/project3"
+                            class="text-blue-500">View Repo</a>.</p>
+                    <div class="tech-stack flex flex-wrap gap-2">
+                        <span class="bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">Vue.js</span>
+                        <span class="bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">Firebase</span>
+                        <span class="bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">Three.js</span>
+                    </div>
+                    <div class="video-preview fixed inset-0 bg-black/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50"
+                        style="box-shadow: 0 0 40px #3b82f6;">
+                        <iframe class="w-full h-full"
+                            src="https://www.youtube.com/embed/YOUR_VIDEO_ID3?autoplay=1&mute=1&loop=1&playlist=YOUR_VIDEO_ID3"
+                            frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section id="education"
+        class="min-h-screen p-8 relative bg-gradient-to-b from-black to-gray-900 z-10 flex flex-col">
+        <div class="header flex items-center p-4">
+            <h2 class="text-5xl font-bold text-blue-500 glow-text pr-4">Education</h2>
+            <div class="glowing-line"></div>
+        </div>
+        <div class="flex items-center justify-center flex-1" data-aos="fade-up">
+            <div class="content-grid grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl w-full">
+                <div class="card bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40"
+                    data-aos="fade-up">
+                    <h3 class="text-2xl mb-2">Degree in [Field]</h3>
+                    <p>[University], [Year] – Key achievements and skills gained.</p>
+                </div>
+                <div class="card bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40"
+                    data-aos="fade-up" data-aos-delay="100">
+                    <h3 class="text-2xl mb-2">Certifications</h3>
+                    <p>AWS Certified, Google Data Analytics – Continuous learning.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Expertise Section with Horizontal Floating Logos -->
+    <section id="expertise"
+        class="min-h-screen p-8 relative bg-gradient-to-b from-black to-gray-900 z-10 flex flex-col">
+        <div class="header flex items-center p-4">
+            <h2 class="text-5xl font-bold text-blue-500 glow-text pr-4">Expertise</h2>
+            <div class="glowing-line"></div>
+        </div>
+        <div class="flex items-center justify-center flex-1" data-aos="fade-up">
+            <div class="content-grid max-w-6xl w-full">
+                <table class="skills-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Tools & Technologies</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Programming Languages</td>
+                            <td>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg"
+                                        alt="Python" class="dark-logo"> <span>Python</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/c/c-original.svg"
+                                        alt="C" class="light-logo"> <span>C</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/cplusplus/cplusplus-original.svg"
+                                        alt="C++" class="light-logo"> <span>C++</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg"
+                                        alt="Java" class="light-logo"> <span>Java</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg"
+                                        alt="JavaScript" class="dark-logo"> <span>JavaScript</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg"
+                                        alt="TypeScript" class="light-logo"> <span>TypeScript</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/php/php-original.svg"
+                                        alt="PHP" class="light-logo"> <span>PHP</span></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Frontend Development</td>
+                            <td>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original.svg"
+                                        alt="HTML5" class="light-logo"> <span>HTML5</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original.svg"
+                                        alt="CSS3" class="light-logo"> <span>CSS3</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-plain.svg"
+                                        alt="Tailwind CSS" class="light-logo"> <span>Tailwind CSS</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg"
+                                        alt="React" class="light-logo"> <span>React</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nextjs/nextjs-original.svg"
+                                        alt="Next.js" class="light-logo"> <span>Next.js</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/threejs/threejs-original.svg"
+                                        alt="Three.js" class="light-logo"> <span>Three.js</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/vite/vite-original.svg"
+                                        alt="Vite" class="dark-logo"> <span>Vite</span></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Backend Development</td>
+                            <td>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg"
+                                        alt="Node.js" class="dark-logo"> <span>Node.js</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/express/express-original.svg"
+                                        alt="Express" class="light-logo"> <span>Express</span></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Frameworks</td>
+                            <td>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/laravel/laravel-plain.svg"
+                                        alt="Laravel" class="light-logo"> <span>Laravel</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/django/django-plain.svg"
+                                        alt="Django" class="light-logo"> <span>Django</span></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Databases</td>
+                            <td>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original.svg"
+                                        alt="MongoDB" class="dark-logo"> <span>MongoDB</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mysql/mysql-original.svg"
+                                        alt="MySQL" class="light-logo"> <span>MySQL</span></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Machine Learning</td>
+                            <td>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/tensorflow/tensorflow-original.svg"
+                                        alt="TensorFlow" class="light-logo"> <span>TensorFlow</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/scikitlearn/scikitlearn-original.svg"
+                                        alt="scikit-learn" class="light-logo"> <span>scikit-learn</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/pandas/pandas-original.svg"
+                                        alt="Pandas" class="light-logo"> <span>Pandas</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/numpy/numpy-original.svg"
+                                        alt="NumPy" class="light-logo"> <span>NumPy</span></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Operating Systems</td>
+                            <td>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/windows8/windows8-original.svg"
+                                        alt="Windows" class="light-logo"> <span>Windows</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/linux/linux-original.svg"
+                                        alt="Linux" class="light-logo"> <span>Linux</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/ubuntu/ubuntu-plain.svg"
+                                        alt="Ubuntu" class="light-logo"> <span>Ubuntu</span></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Design Tools</td>
+                            <td>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/photoshop/photoshop-plain.svg"
+                                        alt="Photoshop" class="light-logo"> <span>Photoshop</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/illustrator/illustrator-plain.svg"
+                                        alt="Illustrator" class="light-logo"> <span>Illustrator</span></div>
+                                <div class="tool-item"><img
+                                        src="https://raw.githubusercontent.com/devicons/devicon/master/icons/figma/figma-original.svg"
+                                        alt="Figma" class="light-logo"> <span>Figma</span></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section with Form -->
+    <section id="contact" class="min-h-screen p-8 relative bg-gradient-to-b from-black to-gray-900 z-10 flex flex-col">
+        <div class="header flex items-center p-4">
+            <h2 class="text-5xl font-bold text-blue-500 glow-text pr-4">Contact</h2>
+            <div class="glowing-line"></div>
+        </div>
+        <div class="flex items-center justify-center flex-1" data-aos="fade-up">
+            <div class="content-grid max-w-xl w-full relative">
+                <div class="card bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10" data-aos="fade-up">
+                    <h3 class="text-2xl mb-4">Get in Touch</h3>
+                    <form action="https://formspree.io/f/your-form-id" method="POST" class="space-y-4 p-4">
+                        <input type="text" name="name" placeholder="Your Name"
+                            class="w-full p-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500">
+                        <input type="email" name="email" placeholder="Your Email"
+                            class="w-full p-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500">
+                        <textarea name="message" placeholder="Your Message" rows="4"
+                            class="w-full p-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"></textarea>
+                        <button type="submit"
+                            class="w-full py-3 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600 transition-colors">Send
+                            Message</button>
+                    </form>
+                    <div class="mt-6 space-y-2">
+                        <p>Email: jasmin8sultana8shimu@gmail.com</p>
+                        <p><a href="https://www.linkedin.com/in/jasmin-sultana-shimu-483709254/"
+                                class="text-blue-500 hover:underline">LinkedIn: /in/jasmin-sultana-shimu</a></p>
+                        <p><a href="https://youtube.com/@shimu-8?si=7WHGXiKsZIjJ6ldN"
+                                class="text-blue-500 hover:underline">YouTube: Shimu</a></p>
+                        <p>GitHub: /shimu-i</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-8 text-center border-t border-gray-800 relative z-10">
+        <p>&copy; 2025 Jasmin Sultana Shimu. Built with Inspiration from Mindhyve.ai.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+    <script>
+        VANTA.NET({
+            el: "#hero-bg",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            color: 0x3b82f6,
+            backgroundColor: 0x000000,
+            points: 12,
+            maxDistance: 18,
+            spacing: 15
+        });
+    </script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 600,
+            once: true
+        });
+    </script>
+    <script>
+        const heroBg = document.getElementById('hero-bg');
+        window.addEventListener('scroll', () => {
+            const scrollPosition = window.scrollY;
+            heroBg.style.transform = `translateY(${scrollPosition * -0.3}px)`;
+        });
+    </script>
+    <script>
+        let percent = 0;
+        const percentText = document.getElementById('percent');
+        const loader = document.getElementById('loader');
+        const interval = setInterval(() => {
+            percent++;
+            percentText.textContent = percent + '%';
+            if (percent >= 100) {
+                clearInterval(interval);
+                loader.classList.add('fade-out');
+                setTimeout(() => loader.style.display = 'none', 500);
+            }
+        }, 25);
+    </script>
+    <script>
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            const videoPreview = card.querySelector('.video-preview');
+            let timeout;
+            card.addEventListener('mouseenter', () => {
+                videoPreview.style.opacity = 1;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    videoPreview.style.opacity = 0;
+                }, 5000);
+            });
+            card.addEventListener('mouseleave', () => {
+                clearTimeout(timeout);
+                videoPreview.style.opacity = 0;
+            });
+        });
+    </script>
+</body>
+
+</html>
